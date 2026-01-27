@@ -34,7 +34,16 @@ elseif(PLATFORM STREQUAL "android")
   set(CMAKE_ANDROID_ARCH_ABI arm64-v8a)
 endif()
 
-project(vni LANGUAGES C CXX)
+file(READ src/vni-version.h version)
+string(REGEX MATCH "VNI_VERSION_MAJOR[ ]+([0-9]+)" _tmp ${version})
+set(VERSION_MAJOR "${CMAKE_MATCH_1}")
+string(REGEX MATCH "VNI_VERSION_MINOR[ ]+([0-9]+)" _tmp ${version})
+set(VERSION_MINOR "${CMAKE_MATCH_1}")
+string(REGEX MATCH "VNI_VERSION_PATCH[ ]+([0-9]+)" _tmp ${version})
+set(VERSION_PATCH "${CMAKE_MATCH_1}")
+
+project(vni VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
+  LANGUAGES C CXX)
 
 if(PLATFORM STREQUAL "win")
   if(ARCH STREQUAL "x86")
@@ -75,6 +84,7 @@ endif()
 set(VNI_SOURCES
   src/vni.cpp
   src/vni.h
+  src/vni-version.h
   src/vni_internal.h
   src/vni_aes.cpp
   src/vni_aes.h
@@ -98,7 +108,10 @@ if(BUILD_SHARED)
     set(VNI_OUTPUT_NAME "vni")
   endif()
 
-  set_target_properties(vni_shared PROPERTIES OUTPUT_NAME ${VNI_OUTPUT_NAME})
+  set_target_properties(vni_shared PROPERTIES
+    OUTPUT_NAME ${VNI_OUTPUT_NAME}
+    VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
+  )
 endif()
 
 if(BUILD_STATIC)
