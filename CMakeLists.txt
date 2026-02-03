@@ -112,6 +112,13 @@ if(BUILD_SHARED)
     OUTPUT_NAME ${VNI_OUTPUT_NAME}
     VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
   )
+
+  install(TARGETS vni_shared
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  )
+  install(FILES
+    src/vni.h
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 endif()
 
 if(BUILD_STATIC)
@@ -124,4 +131,11 @@ if(BUILD_STATIC)
   else()
     set_target_properties(vni_static PROPERTIES OUTPUT_NAME "vni")
   endif()
+
+  install(TARGETS vni_static
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  )
+  install(FILES
+    src/vni.h
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 endif()
