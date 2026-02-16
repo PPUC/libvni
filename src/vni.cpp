@@ -967,7 +967,21 @@ uint32_t Vni_Colorize(Vni_Context* ctx, const uint8_t* frame, uint32_t width,
     }
   }
 
-  auto planes = split_planes(frame, width, height, bitlen);
+  const uint8_t* effective_frame = frame;
+  std::vector<uint8_t> padded_frame;
+
+  Dimensions standard;
+  if (dim.width < standard.width || dim.height < standard.height) {
+    padded_frame.resize(standard.surface(), 0);
+    FrameUtil::Helper::CenterIndexed(
+        padded_frame.data(), static_cast<uint16_t>(standard.width),
+        static_cast<uint8_t>(standard.height), frame,
+        static_cast<uint16_t>(dim.width), static_cast<uint8_t>(dim.height));
+    effective_frame = padded_frame.data();
+    dim = standard;
+  }
+
+  auto planes = split_planes(effective_frame, dim.width, dim.height, bitlen);
 
   if (!context->pal->mappings.empty()) {
     trigger_animation(context, dim, planes, false);
