@@ -111,16 +111,25 @@ if(BUILD_SHARED)
   target_include_directories(vni_shared PUBLIC ${VNI_INCLUDE_DIRS})
   target_compile_definitions(vni_shared PRIVATE VNI_EXPORTS)
 
-  if(PLATFORM STREQUAL "win" AND ARCH STREQUAL "x64")
+  if((PLATFORM STREQUAL "win" OR PLATFORM STREQUAL "win-mingw") AND ARCH STREQUAL "x64")
     set(VNI_OUTPUT_NAME "vni64")
   else()
     set(VNI_OUTPUT_NAME "vni")
   endif()
 
-  set_target_properties(vni_shared PROPERTIES
-    OUTPUT_NAME ${VNI_OUTPUT_NAME}
-    VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
-  )
+  if(PLATFORM STREQUAL "win-mingw")
+    set_target_properties(vni_shared PROPERTIES
+      PREFIX ""
+      IMPORT_PREFIX ""
+      OUTPUT_NAME ${VNI_OUTPUT_NAME}
+      VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
+    )
+  else()
+    set_target_properties(vni_shared PROPERTIES
+      OUTPUT_NAME ${VNI_OUTPUT_NAME}
+      VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
+    )
+  endif()
 
   install(TARGETS vni_shared
     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
@@ -135,8 +144,11 @@ if(BUILD_STATIC)
   target_include_directories(vni_static PUBLIC ${VNI_INCLUDE_DIRS})
   target_compile_definitions(vni_static PUBLIC VNI_STATIC)
 
-  if(PLATFORM STREQUAL "win")
-    set_target_properties(vni_static PROPERTIES OUTPUT_NAME "vni_static")
+  if(PLATFORM STREQUAL "win" OR PLATFORM STREQUAL "win-mingw")
+    set_target_properties(vni_static PROPERTIES
+      PREFIX ""
+      OUTPUT_NAME "vni_static"
+    )
   else()
     set_target_properties(vni_static PROPERTIES OUTPUT_NAME "vni")
   endif()
