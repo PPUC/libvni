@@ -1,5 +1,8 @@
+.DS_Store
 /build/
 /.vs/
 /.vscode/
 /out/
 CMakeSettings.json
+external
+third-party/include/FrameUtil.h
