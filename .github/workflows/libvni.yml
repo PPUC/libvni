@@ -78,6 +78,7 @@ jobs:
       - if: (matrix.platform == 'win')
         name: Build (win)
         run: |
+          ./platforms/${{ matrix.platform }}/${{ matrix.arch }}/external.sh
           if [[ "${{ matrix.arch }}" == "x64" ]]; then
             cmake \
               -G "Visual Studio 18 2026" \
@@ -102,6 +103,7 @@ jobs:
           CURRENT_DIR="$(pwd)"
           MSYSTEM=UCRT64 /c/msys64/usr/bin/bash.exe -l -c "
             cd \"${CURRENT_DIR}\" &&
+            ./platforms/${{ matrix.platform }}/${{ matrix.arch }}/external.sh &&
             cmake \
               -DCMAKE_BUILD_TYPE=Release \
               -DPLATFORM=${{ matrix.platform }} \
@@ -115,6 +117,7 @@ jobs:
       - if: (matrix.platform == 'macos')
         name: Build (macos)
         run: |
+          ./platforms/${{ matrix.platform }}/${{ matrix.arch }}/external.sh
           cmake \
             -DCMAKE_BUILD_TYPE=Release \
             -DPLATFORM=${{ matrix.platform }} \
@@ -127,6 +130,7 @@ jobs:
       - if: (matrix.platform == 'linux')
         name: Build (linux)
         run: |
+          ./platforms/${{ matrix.platform }}/${{ matrix.arch }}/external.sh
           cmake \
             -DCMAKE_BUILD_TYPE=Release \
             -DPLATFORM=${{ matrix.platform }} \
@@ -139,6 +143,7 @@ jobs:
       - if: (matrix.platform == 'ios' || matrix.platform == 'ios-simulator' || matrix.platform == 'tvos')
         name: Build (ios/tvos)
         run: |
+          ./platforms/${{ matrix.platform }}/${{ matrix.arch }}/external.sh
           cmake \
             -DCMAKE_BUILD_TYPE=Release \
             -DPLATFORM=${{ matrix.platform }} \
@@ -151,6 +156,7 @@ jobs:
       - if: (matrix.platform == 'android')
         name: Build (android)
         run: |
+          ./platforms/${{ matrix.platform }}/${{ matrix.arch }}/external.sh
           cmake \
             -DCMAKE_BUILD_TYPE=Release \
             -DPLATFORM=${{ matrix.platform }} \
