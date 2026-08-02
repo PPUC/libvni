@@ -36,10 +36,9 @@ typedef struct Vni_Frame_Struc {
   const uint8_t* palette;  // RGB triples, size = (1 << bitlen) * 3
 } Vni_Frame_Struc;
 
-// Loads PAL/VNI data from the provided paths. Any path may be null.
-// pac_path and vni_key are accepted for API compatibility, but encrypted PAC
-// files are not supported. If pac_path is provided, an error is logged and it
-// is ignored.
+// Loads PAL/VNI data from the provided paths. Any path may be null. If pac_path
+// is provided, it takes precedence over pal_path and vni_path and is decrypted
+// with the 32-character hexadecimal vni_key.
 VNI_API Vni_Context* Vni_LoadFromPaths(const char* pal_path,
                                        const char* vni_path,
                                        const char* pac_path,
