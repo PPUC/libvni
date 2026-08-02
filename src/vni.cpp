@@ -916,6 +916,29 @@ const Vni_Frame_Struc* Vni_GetFrame(const Vni_Context* ctx) {
   return &frame;
 }
 
+uint32_t Vni_SetPalette(Vni_Context* ctx, uint32_t palette_index) {
+  if (!ctx || palette_index > 0xffff) {
+    return 0;
+  }
+  auto* context = reinterpret_cast<Context*>(ctx);
+  if (!context->pal) {
+    return 0;
+  }
+  if (context->active_seq) {
+    context->active_seq->is_running = false;
+    context->active_seq = nullptr;
+  }
+  Palette* palette = find_palette(context->pal.get(), static_cast<uint16_t>(palette_index));
+  if (!palette) {
+    return 0;
+  }
+  context->palette = palette;
+  context->palette_reset_at = -1;
+  context->reset_embedded = false;
+  context->last_embedded_palette = -1;
+  return 1;
+}
+
 void Vni_SetScalerMode(Vni_Context* ctx, uint32_t mode) {
   if (!ctx) {
     return;
