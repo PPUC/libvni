@@ -51,6 +51,10 @@ std::vector<uint8_t> read_bytes_required(std::istream& in, size_t len) {
   return out;
 }
 
+// The DEFLATE decoder below follows the compact inflate/Huffman approach in
+// Mark Adler's puff.c reference implementation from zlib (zlib License),
+// which supplements RFC 1951: https://github.com/madler/zlib/blob/master/contrib/puff/puff.c
+
 uint8_t reverse_bits(uint8_t a) { return FrameUtil::Helper::ReverseByte(a); }
 
 class DeflateBitReader {
