@@ -85,6 +85,8 @@ endif()
 
 set(VNI_SOURCES
   src/vni.cpp
+  src/vni_deflate.cpp
+  src/vni_deflate.h
   src/vni.h
   src/vni-version.h
   src/vni_internal.h
