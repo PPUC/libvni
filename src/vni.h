@@ -51,6 +51,10 @@ VNI_API void Vni_Dispose(Vni_Context* ctx);
 // Returns a pointer to the current output frame buffer.
 VNI_API const Vni_Frame_Struc* Vni_GetFrame(const Vni_Context* ctx);
 
+// Sets the active PAL palette by its PAL index. The selection persists until changed.
+// Returns 1 when the palette exists, otherwise 0.
+VNI_API uint32_t Vni_SetPalette(Vni_Context* ctx, uint32_t palette_index);
+
 // Sets the scaler mode: 0 = none, 1 = scale2x, 2 = doubled pixels.
 VNI_API void Vni_SetScalerMode(Vni_Context* ctx, uint32_t mode);
 
