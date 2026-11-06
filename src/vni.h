@@ -55,6 +55,13 @@ VNI_API const Vni_Frame_Struc* Vni_GetFrame(const Vni_Context* ctx);
 // Returns 1 when the palette exists, otherwise 0.
 VNI_API uint32_t Vni_SetPalette(Vni_Context* ctx, uint32_t palette_index);
 
+// Sets the time in milliseconds that animations and palette durations go by
+// from now on, instead of the system clock: for colorizing recorded frames
+// faster than they were shown (a dump, the frames of an editor), the caller
+// sets each frame's time before Vni_Colorize. A negative time returns to the
+// system clock. Times only go forward while a context runs.
+VNI_API void Vni_SetTime(Vni_Context* ctx, int64_t time_ms);
+
 // Sets the scaler mode: 0 = none, 1 = scale2x, 2 = doubled pixels.
 VNI_API void Vni_SetScalerMode(Vni_Context* ctx, uint32_t mode);
 

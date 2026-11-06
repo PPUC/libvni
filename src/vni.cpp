@@ -165,13 +165,16 @@ uint32_t checksum_plane_with_mask(const std::vector<uint8_t>& plane,
                                              reverse);
 }
 
-int64_t now_ms() {
+}  // namespace
+
+int64_t Context::now_ms() const {
+  if (fixed_time_ms >= 0) {
+    return fixed_time_ms;
+  }
   return std::chrono::duration_cast<std::chrono::milliseconds>(
              std::chrono::steady_clock::now().time_since_epoch())
       .count();
 }
-
-}  // namespace
 
 uint32_t Context::tick() const { return static_cast<uint32_t>(now_ms()); }
 
@@ -558,13 +561,13 @@ static void start_lcm(FrameSeq& seq) {
   }
 }
 
-static void start_replace(FrameSeq& seq) {
-  seq.last_tick = now_ms();
+static void start_replace(const Context* ctx, FrameSeq& seq) {
+  seq.last_tick = ctx->now_ms();
   seq.timer = 0;
 }
 
-static void start_enhance(FrameSeq& seq) {
-  seq.last_tick = now_ms();
+static void start_enhance(const Context* ctx, FrameSeq& seq) {
+  seq.last_tick = ctx->now_ms();
   seq.timer = 0;
 }
 
@@ -615,8 +618,9 @@ static void render_animation(Context* ctx, FrameSeq& seq, const Dimensions& dim,
                              const std::vector<std::vector<uint8_t>>& planes) {
   if (seq.switch_mode == SwitchMode::ColorMask ||
       seq.switch_mode == SwitchMode::Replace) {
-    int64_t delay = now_ms() - seq.last_tick;
-    seq.last_tick = now_ms();
+    const int64_t now = ctx->now_ms();
+    int64_t delay = now - seq.last_tick;
+    seq.last_tick = now;
     seq.timer -= delay;
     if (seq.timer > 0) {
       if (seq.frame_index > 0) {
@@ -736,7 +740,7 @@ static void start_animation(Context* ctx, Mapping& mapping,
   ctx->palette_reset_at = -1;
 
   if (!mapping.is_animation() && mapping.duration > 0) {
-    ctx->palette_reset_at = now_ms() + mapping.duration;
+    ctx->palette_reset_at = ctx->now_ms() + mapping.duration;
   }
 
   if (!mapping.is_animation()) {
@@ -757,11 +761,11 @@ static void start_animation(Context* ctx, Mapping& mapping,
   switch (mapping.mode) {
     case SwitchMode::ColorMask:
     case SwitchMode::Follow:
-      start_enhance(*ctx->active_seq);
+      start_enhance(ctx, *ctx->active_seq);
       break;
     case SwitchMode::Replace:
     case SwitchMode::FollowReplace:
-      start_replace(*ctx->active_seq);
+      start_replace(ctx, *ctx->active_seq);
       break;
     case SwitchMode::LayeredColorMask:
     case SwitchMode::MaskedReplace:
@@ -835,7 +839,7 @@ static void maybe_reset_palette(Context* ctx) {
   if (ctx->palette_reset_at < 0) {
     return;
   }
-  if (now_ms() >= ctx->palette_reset_at) {
+  if (ctx->now_ms() >= ctx->palette_reset_at) {
     if (ctx->default_palette) {
       ctx->palette = ctx->default_palette;
     }
@@ -937,6 +941,14 @@ uint32_t Vni_SetPalette(Vni_Context* ctx, uint32_t palette_index) {
   context->reset_embedded = false;
   context->last_embedded_palette = -1;
   return 1;
+}
+
+void Vni_SetTime(Vni_Context* ctx, int64_t time_ms) {
+  if (!ctx) {
+    return;
+  }
+  auto* context = reinterpret_cast<Context*>(ctx);
+  context->fixed_time_ms = time_ms < 0 ? -1 : time_ms;
 }
 
 void Vni_SetScalerMode(Vni_Context* ctx, uint32_t mode) {

@@ -126,7 +126,11 @@ struct Context {
   int last_embedded_palette = -1;
   bool reset_embedded = false;
   int64_t palette_reset_at = -1;
+  // The time Vni_SetTime set, -1 for the system clock.
+  int64_t fixed_time_ms = -1;
 
+  // The current time in milliseconds: the time set, else the system clock.
+  int64_t now_ms() const;
   uint32_t tick() const;
 };
 
