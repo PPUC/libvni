@@ -90,6 +90,7 @@ set(VNI_SOURCES
   src/vni_internal.h
   src/vni_aes.cpp
   src/vni_aes.h
+  src/vni_frameutil.h
   src/vni_heatshrink.cpp
   src/vni_heatshrink.h
 )

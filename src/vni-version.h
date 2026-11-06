@@ -2,7 +2,7 @@
 
 #define VNI_VERSION_MAJOR 0  // X Digits
 #define VNI_VERSION_MINOR 2  // Max 2 Digits
-#define VNI_VERSION_PATCH 0  // Max 2 Digits
+#define VNI_VERSION_PATCH 1  // Max 2 Digits
 
 #define _VNI_STR(x) #x
 #define VNI_STR(x) _VNI_STR(x)

@@ -6,6 +6,7 @@
 #include <sstream>
 
 #include "FrameUtil.h"
+#include "vni_frameutil.h"
 #include "vni_heatshrink.h"
 #include "vni_internal.h"
 
@@ -46,7 +47,7 @@ std::vector<uint8_t> read_bytes_required(std::istream& in, size_t len) {
   return out;
 }
 
-uint8_t reverse_bits(uint8_t a) { return FrameUtil::Helper::ReverseByte(a); }
+uint8_t reverse_bits(uint8_t a) { return frameutil::ReverseByte(a); }
 
 Palette* find_palette(PalFile* pal, uint16_t palette_index) {
   if (!pal) {
@@ -107,9 +108,9 @@ std::vector<uint8_t> join_planes(
     std::copy(planes[i].begin(), planes[i].end(),
               packed.begin() + i * plane_size);
   }
-  FrameUtil::Helper::Join(data.data(), static_cast<uint16_t>(dim.width),
-                          static_cast<uint16_t>(dim.height),
-                          static_cast<uint8_t>(planes.size()), packed.data());
+  frameutil::Join(data.data(), static_cast<uint16_t>(dim.width),
+                  static_cast<uint16_t>(dim.height),
+                  static_cast<uint8_t>(planes.size()), packed.data());
 
   return data;
 }
@@ -135,12 +136,12 @@ std::vector<uint8_t> scale2x_indexed(const std::vector<uint8_t>& data,
 }
 
 void clear_plane(std::vector<uint8_t>& plane) {
-  FrameUtil::Helper::ClearPlane(plane.data(), plane.size());
+  frameutil::ClearPlane(plane.data(), plane.size());
 }
 
 void or_plane(const std::vector<uint8_t>& src, std::vector<uint8_t>& dest) {
   size_t count = std::min(src.size(), dest.size());
-  FrameUtil::Helper::OrPlane(src.data(), dest.data(), count);
+  frameutil::OrPlane(src.data(), dest.data(), count);
 }
 
 std::vector<uint8_t> combine_plane_with_mask(
@@ -148,21 +149,20 @@ std::vector<uint8_t> combine_plane_with_mask(
     const std::vector<uint8_t>& mask) {
   size_t count = std::min({base.size(), overlay.size(), mask.size()});
   std::vector<uint8_t> out(count, 0);
-  FrameUtil::Helper::CombinePlaneWithMask(base.data(), overlay.data(),
-                                          mask.data(), out.data(), count);
+  frameutil::CombinePlaneWithMask(base.data(), overlay.data(), mask.data(),
+                                  out.data(), count);
   return out;
 }
 
 uint32_t checksum_plane(const std::vector<uint8_t>& plane, bool reverse) {
-  return FrameUtil::Helper::Checksum(plane.data(), plane.size(), reverse);
+  return frameutil::Checksum(plane.data(), plane.size(), reverse);
 }
 
 uint32_t checksum_plane_with_mask(const std::vector<uint8_t>& plane,
                                   const std::vector<uint8_t>& mask,
                                   bool reverse) {
   size_t count = std::min(plane.size(), mask.size());
-  return FrameUtil::Helper::ChecksumWithMask(plane.data(), mask.data(), count,
-                                             reverse);
+  return frameutil::ChecksumWithMask(plane.data(), mask.data(), count, reverse);
 }
 
 }  // namespace
@@ -548,7 +548,7 @@ static void start_lcm(FrameSeq& seq) {
   size_t plane_count = seq.frames[0].planes.size();
   for (size_t i = 0; i < plane_count; i++) {
     seq.lcm_buffer_planes.emplace_back(
-        FrameUtil::Helper::NewPlane(static_cast<uint16_t>(seq.size.width),
+        frameutil::NewPlane(static_cast<uint16_t>(seq.size.width),
                                     static_cast<uint16_t>(seq.size.height)));
   }
   for (auto& plane : seq.lcm_buffer_planes) {
@@ -556,7 +556,7 @@ static void start_lcm(FrameSeq& seq) {
   }
   if (seq.switch_mode == SwitchMode::MaskedReplace) {
     seq.replace_mask =
-        FrameUtil::Helper::NewPlane(static_cast<uint16_t>(seq.size.width),
+        frameutil::NewPlane(static_cast<uint16_t>(seq.size.width),
                                     static_cast<uint16_t>(seq.size.height));
   }
 }
