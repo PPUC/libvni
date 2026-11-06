@@ -3,6 +3,27 @@ LibDmd is part of [DMD Extensions](https://github.com/freezy/dmd-extensions).
 
 The purpose of this lib is to support unprotected VNI colorizations in libdmdutil, mainly to create RGB565 dumps of colorized frames as a jump-start for the author of the VNI to convert the project into a Serum colorization.
 
+## API
+
+`src/vni.h`: `Vni_LoadFromPaths` loads a PAL file and its VNI file (encrypted PAC
+files are not supported), `Vni_Colorize` colorizes a frame of 2 or 4 bits and
+`Vni_GetFrame` returns the result with its palette. `Vni_SetPalette` selects a
+palette directly. `Vni_SetTime` (0.2.0) makes animations and palette durations
+go by the times the caller gives instead of the system clock, so that recorded
+frames (a dump, the frames of an editor) can be colorized faster than they were
+shown.
+
+## Origin
+
+- `src/vni.cpp` and `src/vni_frameutil.h` (the bit plane and checksum helpers,
+  0.2.1) were converted from LibDmd's VNI colorizer and its `FrameUtil.cs`.
+- `src/vni_heatshrink.cpp` decodes heatshrink-compressed VNI animations, as
+  LibDmd's decoder does, a port of
+  [atomicobject's heatshrink](https://github.com/atomicobject/heatshrink) (ISC
+  license).
+- Splitting frames into bit planes, scaling and centring come from
+  [libframeutil](https://github.com/PPUC/libframeutil).
+
 ## Building:
 
 #### Windows (x64)
